@@ -48,6 +48,8 @@ var (
 	reserveSchema  bool
 	xmlPath        string
 	retryConnCount int
+	database       string
+	createDatabase bool
 )
 
 func init() {
@@ -62,6 +64,8 @@ func init() {
 	flag.BoolVar(&reserveSchema, "reserve-schema", false, "Reserve schema after each test")
 	flag.StringVar(&xmlPath, "xunitfile", "", "The xml file path to record testing results.")
 	flag.IntVar(&retryConnCount, "retry-connection-count", 120, "The max number to retry to connect to the database.")
+	flag.StringVar(&database, "database", "mysql", "The database to run test.")
+	flag.BoolVar(&createDatabase, "create-database", false, "Need to create new database to test.")
 
 	c := &charset.Charset{
 		Name:             "gbk",
@@ -175,11 +179,12 @@ func setSessionVariable(db *sql.DB) {
 
 // isTiDB returns true if the DB is confirmed to be TiDB
 func isTiDB(db *sql.DB) bool {
-	if _, err := db.Exec("SELECT tidb_version()"); err != nil {
-		log.Infof("This doesn't look like a TiDB server, err[%v]", err)
-		return false
-	}
-	return true
+	//if _, err := db.Exec("SELECT tidb_version()"); err != nil {
+	//	log.Infof("This doesn't look like a TiDB server, err[%v]", err)
+	//	return false
+	//}
+	//return true
+	return false
 }
 
 func (t *tester) addConnection(connName, hostName, userName, password, db string) {
@@ -241,17 +246,17 @@ func (t *tester) disconnect(connName string) {
 }
 
 func (t *tester) preProcess() {
-	dbName := "test"
-	mdb, err := OpenDBWithRetry("mysql", user+":"+passwd+"@tcp("+host+":"+port+")/"+dbName+"?time_zone=%27Asia%2FShanghai%27&allowAllFiles=true"+params, retryConnCount)
+	mdb, err := OpenDBWithRetry("mysql", user+":"+passwd+"@tcp("+host+":"+port+")/"+database+"?time_zone=%27Asia%2FShanghai%27&allowAllFiles=true"+params, retryConnCount)
 	t.conn = make(map[string]*Conn)
 	if err != nil {
 		log.Fatalf("Open db err %v", err)
 	}
+	if createDatabase {
+		log.Warn("Create new db", mdb)
 
-	log.Warn("Create new db", mdb)
-
-	if _, err = mdb.Exec(fmt.Sprintf("create database `%s`", t.name)); err != nil {
-		log.Fatalf("Executing create db %s err[%v]", t.name, err)
+		if _, err = mdb.Exec(fmt.Sprintf("create database `%s`", t.name)); err != nil {
+			log.Fatalf("Executing create db %s err[%v]", t.name, err)
+		}
 	}
 
 	if _, err = mdb.Exec(fmt.Sprintf("use `%s`", t.name)); err != nil {
@@ -480,8 +485,7 @@ func (t *tester) concurrentRun(concurrentQueue []query, concurrentSize int) erro
 func (t *tester) concurrentExecute(querys []query, wg *sync.WaitGroup, errOccured chan struct{}) {
 	defer wg.Done()
 	tt := newTester(t.name)
-	dbName := "test"
-	mdb, err := OpenDBWithRetry("mysql", user+":"+passwd+"@tcp("+host+":"+port+")/"+dbName+"?time_zone=%27Asia%2FShanghai%27&allowAllFiles=true"+params, retryConnCount)
+	mdb, err := OpenDBWithRetry("mysql", user+":"+passwd+"@tcp("+host+":"+port+")/"+database+"?time_zone=%27Asia%2FShanghai%27&allowAllFiles=true"+params, retryConnCount)
 	if err != nil {
 		log.Fatalf("Open db err %v", err)
 	}
