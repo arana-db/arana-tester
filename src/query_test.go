@@ -29,7 +29,7 @@ func assertEqual(t *testing.T, a interface{}, b interface{}, message string) {
 }
 
 func TestParseQueryies(t *testing.T) {
-	query := "select * from t;"
+	query := query{"", "select * from t;", 0, 0}
 	if q, err := ParseQueries(query); err == nil {
 		assertEqual(t, q[0].tp, Q_QUERY, fmt.Sprintf("Expected: %d, got: %d", Q_QUERY, q[0].tp))
 		assertEqual(t, q[0].Query, query, fmt.Sprintf("Expected: %s, got: %s", query, q[0].Query))
@@ -37,7 +37,7 @@ func TestParseQueryies(t *testing.T) {
 		t.Fatalf("error is not nil. %v", err)
 	}
 
-	query = "--sorted_result select * from t;"
+	query.Query = "--sorted_result select * from t;"
 	if q, err := ParseQueries(query); err == nil {
 		assertEqual(t, q[0].tp, Q_SORTED_RESULT, "sorted_result")
 		assertEqual(t, q[0].Query, "select * from t;", fmt.Sprintf("Expected: '%s', got '%s'", "select * from t;", q[0].Query))
@@ -46,7 +46,7 @@ func TestParseQueryies(t *testing.T) {
 	}
 
 	// invalid comment command style
-	query = "--abc select * from t;"
+	query.Query = "--abc select * from t;"
 	_, err := ParseQueries(query)
 	assertEqual(t, err, ErrInvalidCommand, fmt.Sprintf("Expected: %v, got %v", ErrInvalidCommand, err))
 
