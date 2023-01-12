@@ -1,12 +1,12 @@
 DESC student;
 Field	Type	Null	Key	Default	Extra
 id	bigint unsigned	NO	PRI	NULL	auto_increment
-uid	bigint unsigned	NO	UNI	NULL
-name	varchar(255)	NO	MUL	NULL
-score	decimal(6,2)	YES		0.00
-nickname	varchar(255)	YES	MUL	NULL
-gender	tinyint	YES		NULL
-birth_year	smallint unsigned	YES		0
+uid	bigint unsigned	NO	UNI	NULL	
+name	varchar(255)	NO	MUL	NULL	
+score	decimal(6,2)	YES		0.00	
+nickname	varchar(255)	YES	MUL	NULL	
+gender	tinyint	YES		NULL	
+birth_year	smallint unsigned	YES		0	
 created_at	datetime	NO		CURRENT_TIMESTAMP	DEFAULT_GENERATED
 modified_at	datetime	NO		CURRENT_TIMESTAMP	DEFAULT_GENERATED on update CURRENT_TIMESTAMP
 DESC student id;
