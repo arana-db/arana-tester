@@ -259,9 +259,9 @@ func (t *tester) preProcess() {
 		}
 	}
 
-	if _, err = mdb.Exec(fmt.Sprintf("use `%s`", t.name)); err != nil {
-		log.Fatalf("Executing Use test err[%v]", err)
-	}
+	//if _, err = mdb.Exec(fmt.Sprintf("use `%s`", t.name)); err != nil {
+	//	log.Fatalf("Pre process executing Use test err[%v]", err)
+	//}
 	if isTiDB(mdb) {
 		if _, err = mdb.Exec("SET @@tidb_init_chunk_size=1"); err != nil {
 			log.Fatalf("Executing \"SET @@tidb_init_chunk_size=1\" err[%v]", err)
@@ -489,9 +489,9 @@ func (t *tester) concurrentExecute(querys []query, wg *sync.WaitGroup, errOccure
 	if err != nil {
 		log.Fatalf("Open db err %v", err)
 	}
-	if _, err = mdb.Exec(fmt.Sprintf("use `%s`", t.name)); err != nil {
-		log.Fatalf("Executing Use test err[%v]", err)
-	}
+	//if _, err = mdb.Exec(fmt.Sprintf("use `%s`", t.name)); err != nil {
+	//	log.Fatalf("Concurrent executing Use test err[%v]", err)
+	//}
 	if isTiDB(mdb) {
 		if _, err = mdb.Exec("SET @@tidb_init_chunk_size=1"); err != nil {
 			log.Fatalf("Executing \"SET @@tidb_init_chunk_size=1\" err[%v]", err)
