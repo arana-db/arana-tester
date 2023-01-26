@@ -315,7 +315,7 @@ func (t *tester) Run() error {
 		return err
 	}
 
-	if err = t.openResult(); err != nil {
+	if err = t.openResult(); err != nil && !os.IsNotExist(err) {
 		err = errors.Trace(err)
 		t.addFailure(&testSuite, &err, 0)
 		return err
@@ -734,7 +734,8 @@ func (t *tester) execute(query query) error {
 			return errors.Trace(errors.Errorf("run \"%v\" at line %d err %v", st.Text(), query.Line, err))
 		}
 
-		if !record {
+		// when t.resultFD == nil, only execute sql, but not compare the result
+		if !record && t.resultFD != nil {
 			// check test result now
 			gotBuf := t.buf.Bytes()[offset:]
 
@@ -904,7 +905,6 @@ func (t *tester) openResult() error {
 	if record {
 		return nil
 	}
-
 	var err error
 	t.resultFD, err = os.Open(t.resultFileName())
 	return err
