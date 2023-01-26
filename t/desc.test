@@ -1,3 +1,6 @@
 DESC student;
 DESC student id;
 DESC student modified_at;
+DESCRIBE student;
+DESCRIBE student id;
+DESCRIBE student modified_at;

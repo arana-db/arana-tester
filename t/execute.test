@@ -1,0 +1,2 @@
+SELECT NOW() FROM student WHERE uid = 32;
+SELECT NOW();
