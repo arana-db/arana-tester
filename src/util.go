@@ -27,6 +27,7 @@ import (
 func OpenDBWithRetry(driverName, dataSourceName string, retryCount int) (mdb *sql.DB, err error) {
 	startTime := time.Now()
 	sleepTime := time.Millisecond * 500
+	log.Warnf("open db, data source name: %s", dataSourceName)
 	// The max retry interval is 60 s.
 	for i := 0; i < retryCount; i++ {
 		mdb, err = sql.Open(driverName, dataSourceName)

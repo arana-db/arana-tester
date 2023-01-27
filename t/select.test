@@ -1,0 +1,2 @@
+SELECT uid, name FROM student WHERE uid IN (32, 320);
+SELECT uid AS u, name AS n FROM student WHERE uid IN (32, 320);
