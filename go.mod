@@ -1,4 +1,4 @@
-module github.com/arana-db/aranr-tester
+module github.com/arana-db/arana-tester
 
 go 1.18
 
