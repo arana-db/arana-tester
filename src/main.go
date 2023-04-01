@@ -26,13 +26,13 @@ import (
 	"sync"
 	"time"
 
+	"github.com/arana-db/parser"
+	"github.com/arana-db/parser/ast"
+	"github.com/arana-db/parser/charset"
+	"github.com/arana-db/parser/terror"
+	_ "github.com/arana-db/parser/test_driver"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/pingcap/errors"
-	"github.com/pingcap/tidb/parser"
-	"github.com/pingcap/tidb/parser/ast"
-	"github.com/pingcap/tidb/parser/charset"
-	"github.com/pingcap/tidb/parser/terror"
-	_ "github.com/pingcap/tidb/parser/test_driver"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -641,7 +641,7 @@ func syntaxError(err error) error {
 	if err == nil {
 		return nil
 	}
-	return parser.ErrParse.GenWithStackByArgs("You have an error in your SQL syntax; check the manual that corresponds to your TiDB version for the right syntax to use", err.Error())
+	return parser.ErrParse.GenWithStackByArgs("You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use", err.Error())
 }
 
 func (t *tester) stmtExecute(query query, st ast.StmtNode) (err error) {
@@ -656,7 +656,7 @@ func (t *tester) stmtExecute(query query, st ast.StmtNode) (err error) {
 		t.buf.WriteString(qText)
 		t.buf.WriteString("\n")
 	}
-	switch x := st.(type) {
+	switch st.(type) {
 	case *ast.BeginStmt:
 		t.tx, err = t.mdb.Begin()
 		if err != nil {
@@ -670,9 +670,7 @@ func (t *tester) stmtExecute(query query, st ast.StmtNode) (err error) {
 		}
 		return err
 	case *ast.RollbackStmt:
-		if x.SavepointName == "" {
-			return t.rollback()
-		}
+		return t.rollback()
 	}
 	if t.tx != nil {
 		err = t.executeStmt(qText)
